@@ -1,4 +1,6 @@
 import type { Chat } from "../utils/mockData";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type ChatListProps = {
   chats: Chat[];
@@ -12,58 +14,60 @@ export default function ChatList({
   onSelect,
 }: ChatListProps) {
   return (
-    <div className="rounded-3xl border border-white/70 bg-white/80 p-4 shadow-[0_20px_50px_-35px_rgba(15,15,15,0.35)] backdrop-blur">
-      <div className="flex items-center gap-3">
-        <input
-          placeholder="Buscar chat"
-          className="w-full rounded-full border border-slate-200 px-4 py-2 text-xs text-slate-600"
+    <div className="flex h-full flex-col">
+      <div className="flex items-center gap-3 rounded-xl bg-[#202c33] px-3 py-2">
+        <span className="text-xs text-white/40">🔎</span>
+        <Input
+          placeholder="Buscar o iniciar un chat"
+          className="h-9 border-0 bg-transparent text-xs text-white/80 placeholder:text-white/40 focus-visible:ring-0"
         />
       </div>
-      <div className="mt-4 space-y-3">
-        {chats.map((chat) => {
-          const isActive = chat.id === activeChatId;
-          return (
-            <button
-              key={chat.id}
-              type="button"
-              onClick={() => onSelect(chat.id)}
-              className={`w-full rounded-2xl border px-4 py-3 text-left transition ${
-                isActive
-                  ? "border-slate-900 bg-slate-900 text-white"
-                  : "border-slate-200 bg-white text-slate-800 hover:border-slate-300"
-              }`}
-            >
-              <div className="flex items-center justify-between text-sm font-semibold">
-                <span>{chat.name}</span>
-                <span
-                  className={`text-xs ${
-                    isActive ? "text-white/70" : "text-slate-400"
-                  }`}
-                >
-                  {chat.time}
-                </span>
-              </div>
-              <p
-                className={`mt-1 text-xs ${
-                  isActive ? "text-white/70" : "text-slate-500"
+      <ScrollArea className="mt-3 h-full">
+        <div className="space-y-1 pb-4">
+          {chats.map((chat) => {
+            const isActive = chat.id === activeChatId;
+            return (
+              <button
+                key={chat.id}
+                type="button"
+                onClick={() => onSelect(chat.id)}
+                className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition ${
+                  isActive
+                    ? "bg-[#2a3942]"
+                    : "hover:bg-[#202c33]"
                 }`}
               >
-                {chat.preview}
-              </p>
-              <div className="mt-2 flex items-center justify-between text-[11px] uppercase tracking-[0.2em]">
-                <span className={isActive ? "text-white/70" : "text-slate-400"}>
-                  {chat.categoryLabel}
-                </span>
-                {chat.unread > 0 && (
-                  <span className="rounded-full bg-emerald-400 px-2 py-0.5 text-[10px] font-semibold text-slate-900">
-                    {chat.unread}
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1f2b32] text-xs font-semibold text-white/70">
+                  {chat.name
+                    .split(" ")
+                    .slice(0, 2)
+                    .map((chunk) => chunk[0])
+                    .join("")}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-semibold text-white">
+                      {chat.name}
+                    </span>
+                    <span className="text-[11px] text-white/40">{chat.time}</span>
+                  </div>
+                  <div className="mt-1 flex items-center justify-between">
+                    <p className="text-xs text-white/50">{chat.preview}</p>
+                    {chat.unread > 0 && (
+                      <span className="rounded-full bg-[#25d366] px-2 py-0.5 text-[10px] font-semibold text-[#111b21]">
+                        {chat.unread}
+                      </span>
+                    )}
+                  </div>
+                  <span className="mt-1 inline-flex rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.2em] text-white/50">
+                    {chat.categoryLabel}
                   </span>
-                )}
-              </div>
-            </button>
-          );
-        })}
-      </div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </ScrollArea>
     </div>
   );
 }

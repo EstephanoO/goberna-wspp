@@ -4,6 +4,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import type { Chat, Message } from "../utils/mockData";
 import { useChatMessages } from "../hooks/useChatMessages";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type ChatWindowProps = {
   activeChat: Chat | null;
@@ -111,69 +114,78 @@ export default function ChatWindow({ activeChat, messages }: ChatWindowProps) {
   };
 
   return (
-    <div className="flex flex-col rounded-3xl border border-white/70 bg-white/80 shadow-[0_20px_50px_-35px_rgba(15,15,15,0.35)] backdrop-blur">
-      <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-        <div>
-          <p className="text-sm font-semibold text-slate-900">
-            {activeChat?.name ?? "Selecciona un chat"}
-          </p>
-          <p className="text-xs text-slate-500">
-            {activeChat?.categoryLabel ?? "Sin categoria"} · {demoRecipient}
-          </p>
+    <div className="flex h-full flex-col">
+      <div className="flex items-center justify-between border-b border-white/10 bg-[#202c33] px-6 py-4 text-white">
+        <div className="flex items-center gap-4">
+          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#1f2b32] text-xs font-semibold text-white/70">
+            {activeChat?.name
+              ? activeChat.name
+                  .split(" ")
+                  .slice(0, 2)
+                  .map((chunk) => chunk[0])
+                  .join("")
+              : "--"}
+          </div>
+          <div>
+            <p className="text-sm font-semibold">
+              {activeChat?.name ?? "Selecciona un chat"}
+            </p>
+            <p className="text-xs text-white/50">
+              {activeChat?.categoryLabel ?? "Sin categoria"} · {demoRecipient}
+            </p>
+          </div>
         </div>
-        <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
+        <span className="rounded-full bg-[#1f2b32] px-3 py-1 text-[11px] font-semibold text-white/60">
           En ventana
         </span>
       </div>
-      <div className="flex-1 space-y-4 px-5 py-6">
-        {localMessages.map((message) => (
-          <div
-            key={message.id}
-            className={`flex ${
-              message.from === "me" ? "justify-end" : "justify-start"
-            }`}
-          >
+      <ScrollArea className="flex-1 bg-[#0b141a] bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.04),_transparent_60%)] px-6 py-6">
+        <div className="space-y-4 pb-6">
+          {localMessages.map((message) => (
             <div
-              className={`max-w-[70%] rounded-2xl px-4 py-3 text-sm ${
-                message.from === "me"
-                  ? "bg-slate-900 text-white"
-                  : "bg-slate-100 text-slate-700"
+              key={message.id}
+              className={`flex ${
+                message.from === "me" ? "justify-end" : "justify-start"
               }`}
             >
-              <p>{message.text}</p>
-              <p
-                className={`mt-2 text-[11px] ${
-                  message.from === "me" ? "text-white/70" : "text-slate-400"
+              <div
+                className={`max-w-[70%] rounded-2xl px-4 py-3 text-sm ${
+                  message.from === "me"
+                    ? "bg-[#005c4b] text-white"
+                    : "bg-[#202c33] text-white"
                 }`}
               >
-                {message.time}
-              </p>
+                <p>{message.text}</p>
+                <p className="mt-2 text-[10px] text-white/60">
+                  {message.time}
+                </p>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
-      <div className="border-t border-slate-200 px-5 py-4">
+          ))}
+        </div>
+      </ScrollArea>
+      <div className="border-t border-white/10 bg-[#202c33] px-5 py-4">
         <div className="flex items-center gap-3">
-          <input
+          <Input
             placeholder="Escribir mensaje"
             value={messageInput}
             onChange={(event) => setMessageInput(event.target.value)}
             disabled={!activeChat}
-            className="w-full rounded-full border border-slate-200 px-4 py-2 text-xs text-slate-600"
+            className="h-11 border-white/10 bg-[#111b21] text-xs text-white placeholder:text-white/40 focus-visible:ring-0"
           />
-          <button
+          <Button
             type="button"
             onClick={handleSend}
             disabled={sendStatus === "sending" || !activeChat}
-            className="rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white"
+            className="h-11 rounded-xl bg-[#25d366] px-4 text-xs font-semibold text-[#111b21] hover:bg-[#20c45e]"
           >
             {sendStatus === "sending" ? "Enviando" : "Enviar"}
-          </button>
+          </Button>
         </div>
         {sendMessage && (
           <p
-            className={`mt-3 text-xs ${
-              sendStatus === "error" ? "text-rose-600" : "text-emerald-600"
+            className={`mt-2 text-xs ${
+              sendStatus === "error" ? "text-rose-300" : "text-emerald-300"
             }`}
           >
             {sendMessage}
