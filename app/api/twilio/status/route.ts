@@ -13,22 +13,21 @@ const normalizeWhatsApp = (input: string) => {
   return `whatsapp:${trimmed}`;
 };
 
-
 export async function POST(request: Request) {
   const raw = await request.text();
   const params = new URLSearchParams(raw);
 
-  const body = params.get("Body") ?? "";
-  const from = normalizeWhatsApp(params.get("From") ?? "");
+  const messageSid = params.get("MessageSid") ?? "";
+  const messageStatus = params.get("MessageStatus") ?? "";
   const to = normalizeWhatsApp(params.get("To") ?? "");
-  const sid = params.get("MessageSid") ?? "";
+  const from = normalizeWhatsApp(params.get("From") ?? "");
 
-  if (body && from && to) {
+  if (messageSid && (to || from)) {
     addMessage({
-      id: sid || `in-${Date.now()}`,
-      from,
-      to,
-      body,
+      id: `status-${messageSid}`,
+      from: to || from,
+      to: from || to,
+      body: `Estado: ${messageStatus || "actualizado"}`,
       direction: "inbound",
       time: new Date().toLocaleTimeString("es-AR", {
         hour: "2-digit",
@@ -37,11 +36,5 @@ export async function POST(request: Request) {
     });
   }
 
-  const reply = `<?xml version="1.0" encoding="UTF-8"?>
-<Response></Response>`;
-
-  return new NextResponse(reply, {
-    status: 200,
-    headers: { "Content-Type": "text/xml" },
-  });
+  return NextResponse.json({ ok: true });
 }

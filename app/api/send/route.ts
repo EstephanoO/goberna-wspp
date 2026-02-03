@@ -42,6 +42,10 @@ export async function POST(request: Request) {
   const accountSid = process.env.TWILIO_ACCOUNT_SID;
   const authToken = process.env.TWILIO_AUTH_TOKEN;
   const from = process.env.TWILIO_WHATSAPP_FROM ?? "whatsapp:+14155238886";
+  const baseUrl = process.env.PUBLIC_BASE_URL ?? "";
+  const statusCallback = baseUrl
+    ? `${baseUrl.replace(/\/$/, "")}/api/twilio/status`
+    : undefined;
 
   if (!accountSid || !authToken) {
     return NextResponse.json(
@@ -57,6 +61,7 @@ export async function POST(request: Request) {
         from,
         to: normalizeWhatsApp(to),
         body: message,
+        statusCallback,
       })
     )
   );
